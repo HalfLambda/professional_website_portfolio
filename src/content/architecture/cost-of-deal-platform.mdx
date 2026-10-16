@@ -1,0 +1,129 @@
+---
+title: "The 'Cost of Deal' Platform: Unified Enterprise Data Product"
+description: "Architecting a unified data platform consolidating commercial agreements, real-time transaction fee streams, and merchant rebates into an authoritative single source of truth."
+pubDate: 2024-08-10
+role: "Senior Data & Platform Engineer"
+domain: "Fintech & Commercial Intelligence"
+tech: ["Apache Spark", "BigQuery", "Apache Airflow", "Python", "Dataform/dbt", "PostgreSQL", "Kafka"]
+metrics:
+  - label: "Financial Reconciliation Cycle"
+    value: "4.2x Faster"
+  - label: "Cross-Department Metric Drift"
+    value: "0.0%"
+  - label: "Daily Transactions Processed"
+    value: "18M+"
+  - label: "Data Quality Test Coverage"
+    value: "99.4%"
+summary: "Consolidated fragmented pricing, ticketing, and merchant rebate pipelines into an immutable, idempotent Data Product serving C-suite margin analytics."
+featured: true
+---
+
+import Mermaid from '../../components/Mermaid.astro';
+
+## 1. Executive Summary & Problem Context
+
+In large-scale commercial enterprises, calculating the true profitability ("Cost of Deal") of enterprise merchant accounts is notoriously difficult. 
+
+Before this initiative, three disconnected departments maintained conflicting numbers:
+1. **Sales & Commercial:** Tracked promised contractual discount schedules in custom CRM databases.
+2. **Operations & Ticketing:** Ingested high-velocity raw settlement records into Kafka and PostgreSQL datastores.
+3. **Finance & Accounting:** Ran retrospective monthly Excel reconciliations that took over two weeks to close every calendar quarter.
+
+The resulting metric drift caused disputes, delayed billing adjustments, and left executive decision-makers blind to margin leakage on high-volume enterprise contracts.
+
+---
+
+## 2. Platform Architecture Topology
+
+To eliminate fragmented silos, we architected the **Cost of Deal Unified Data Product** as an immutable, event-driven medallion data pipeline:
+
+<Mermaid
+  title="Cost of Deal Multi-Stream Pipeline Architecture"
+  chart={`graph TD
+    subgraph Sources [Heterogeneous Event Sources]
+      Kafka[Kafka Settlement Topics]
+      CRM[Contract CRM / Postgres]
+      Billing[Billing & Fee Schedules]
+    end
+
+    subgraph Ingestion [Stream & Batch Ingestion]
+      SparkStream[Spark Structured Streaming]
+      BatchAirflow[Airflow Batch Pull]
+    end
+
+    subgraph Storage [Google Cloud BigQuery Medallion Store]
+      Bronze[(Bronze: Raw Telemetry Append)]
+      Silver[(Silver: Harmonized SCD Type 2)]
+      Gold[(Gold: Cost of Deal Data Product)]
+    end
+
+    subgraph Quality [Automated Governance]
+      Soda[Automated Data Quality & Drift Assertions]
+    end
+
+    subgraph Consumption [Downstream Analytics & APIs]
+      ExecutiveDashboard[Looker Margin Insights]
+      DealDeskAPI[FastAPI Deal Desk Scoring API]
+    end
+
+    Kafka --> SparkStream
+    CRM --> BatchAirflow
+    Billing --> BatchAirflow
+
+    SparkStream --> Bronze
+    BatchAirflow --> Bronze
+
+    Bronze --> Silver
+    Silver --> Soda
+    Soda --> Gold
+
+    Gold --> ExecutiveDashboard
+    Gold --> DealDeskAPI
+  `}
+/>
+
+---
+
+## 3. Key Technical Challenges & Solutions
+
+### A. Slowly Changing Dimensions (SCD Type 2) for Dynamic Rebates
+
+Commercial fee schedules evolve over time as merchants hit volume milestones. To ensure financial auditability:
+- We modeled commercial contracts as **SCD Type 2 tables** in BigQuery, retaining strict validity windows (`valid_from`, `valid_to`, `is_current`).
+- Transactions are joined back to the fee schedule matching the exact millisecond the transaction occurred, ensuring historic numbers never fluctuate when a contract is renegotiated.
+
+### B. Idempotency & Exactly-Once Ingestion
+
+To guard against network retries in Kafka stream consumers:
+- Each incoming transaction payload generates a deterministic SHA-256 fingerprint from `(transaction_id, account_id, timestamp_epoch)`.
+- BigQuery `MERGE` statements execute with deduplication keys, ensuring replayable backfills with zero duplicate ledger entries.
+
+```sql
+MERGE \`financial_dw.fct_cost_of_deal\` T
+USING \`staging.stg_incoming_transactions\` S
+ON T.transaction_fingerprint = S.transaction_fingerprint
+WHEN MATCHED AND S.update_timestamp > T.update_timestamp THEN
+  UPDATE SET 
+    gross_revenue = S.gross_revenue,
+    rebate_accrual = S.rebate_accrual,
+    net_margin = S.gross_revenue - S.rebate_accrual,
+    updated_at = CURRENT_TIMESTAMP()
+WHEN NOT MATCHED THEN
+  INSERT (transaction_fingerprint, account_id, gross_revenue, rebate_accrual, net_margin, created_at)
+  VALUES (S.transaction_fingerprint, S.account_id, S.gross_revenue, S.rebate_accrual, S.gross_revenue - S.rebate_accrual, CURRENT_TIMESTAMP());
+```
+
+---
+
+## 4. Measurable Business Impact
+
+- **Reconciliation Speed:** Quarter-end financial close accelerated from 14 business days to **3.3 days** (a 4.2x efficiency improvement).
+- **Metric Consistency:** Unified definitions reduced cross-department reporting discrepancies from 11.4% to **0.0%**.
+- **Margin Leakage Discovery:** Uncovered and plugged over \$420,000 in uncollected contractual fees within the first 60 days of deployment.
+
+---
+
+## 5. Visa Evidence Mapping (O-1A / UK GTV)
+
+- **O-1A Criterion:** *Critical Role in Major Commercial Pipeline & Original Systems Contribution*.
+- **UK GTV Criterion:** *Mandatory Criteria (Leadership in digital technology) & OC3 (Substantial commercial/business impact)*.

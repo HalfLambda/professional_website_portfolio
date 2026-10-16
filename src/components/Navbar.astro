@@ -1,0 +1,147 @@
+---
+import { siteConfig } from '../config/site';
+import ThemeToggle from './ThemeToggle.astro';
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string) {
+  if (href === '/') {
+    return currentPath === '/';
+  }
+  return currentPath.startsWith(href);
+}
+---
+
+<header class="sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 dark:bg-dark-bg/80 border-b border-slate-200/80 dark:border-dark-border/80 transition-colors">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <!-- Brand / Logo -->
+    <a href="/" class="flex items-center gap-3 group">
+      <div class="h-9 w-9 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-950 font-mono font-bold flex items-center justify-center text-sm shadow-sm group-hover:scale-105 transition-transform">
+        OK
+      </div>
+      <div class="flex flex-col">
+        <span class="font-bold text-slate-900 dark:text-white tracking-tight text-sm sm:text-base leading-tight">
+          {siteConfig.name}
+        </span>
+        <span class="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline-block">
+          Senior Data & AI Platform Engineer
+        </span>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation Links -->
+    <nav class="hidden md:flex items-center gap-1 lg:gap-2">
+      {siteConfig.nav.map((item) => {
+        const active = isActive(item.href);
+        return (
+          <a
+            href={item.href}
+            class={`relative px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${
+              active
+                ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40'
+                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-dark-surface'
+            }`}
+          >
+            {item.label}
+            {item.badge && (
+              <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300 font-semibold border border-sky-200 dark:border-sky-800/60">
+                {item.badge}
+              </span>
+            )}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- Right Controls: Status + Book CTA + Theme Toggle -->
+    <div class="flex items-center gap-3">
+      <div class="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-mono bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-400">
+        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Advisory Open</span>
+      </div>
+
+      <a
+        href="/mentorship"
+        class="hidden sm:inline-flex items-center justify-center px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 shadow-sm transition-all"
+      >
+        Book 1:1
+      </a>
+
+      <ThemeToggle />
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-btn"
+        type="button"
+        aria-label="Open navigation menu"
+        class="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-dark-surface"
+      >
+        <svg id="menu-open-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <svg id="menu-close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Dropdown Menu -->
+  <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-6 border-t border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg space-y-2">
+    {siteConfig.nav.map((item) => (
+      <a
+        href={item.href}
+        class={`block px-3 py-2 rounded-md text-base font-medium ${
+          isActive(item.href)
+            ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40'
+            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-dark-surface'
+        }`}
+      >
+        <div class="flex items-center justify-between">
+          <span>{item.label}</span>
+          {item.badge && (
+            <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300 font-semibold">
+              {item.badge}
+            </span>
+          )}
+        </div>
+      </a>
+    ))}
+
+    <div class="pt-4 border-t border-slate-200 dark:border-dark-border flex flex-col gap-2">
+      <a
+        href="/mentorship"
+        class="w-full text-center py-2 text-sm font-semibold rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 transition-all"
+      >
+        Book 1:1 Mentorship Session
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  function setupMobileMenu() {
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    const openIcon = document.getElementById('menu-open-icon');
+    const closeIcon = document.getElementById('menu-close-icon');
+
+    if (!btn || !menu || !openIcon || !closeIcon) return;
+
+    btn.addEventListener('click', () => {
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        openIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+      } else {
+        menu.classList.add('hidden');
+        openIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      }
+    });
+  }
+
+  setupMobileMenu();
+  document.addEventListener('astro:after-swap', setupMobileMenu);
+</script>

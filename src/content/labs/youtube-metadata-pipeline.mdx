@@ -1,0 +1,108 @@
+---
+title: "Automated YouTube & Media Asset Pipeline: FastAPI, DuckDB, Polars & Local LLMs"
+description: "A production-grade local automation pipeline transforming raw video transcripts, timestamps, and slide benchmarks into SEO-optimized YouTube chapters, metadata, and cross-platform markdown notes."
+pubDate: 2024-11-20
+category: "Media & Data Automation"
+tech: ["Python", "FastAPI", "DuckDB", "Polars", "Ollama", "Whisper", "Pydantic"]
+status: "Completed"
+githubUrl: "https://github.com/ozair-khan/media-metadata-pipeline"
+youtubeUrl: "https://youtube.com/@ozairkhan-tech"
+featured: true
+---
+
+import Mermaid from '../../components/Mermaid.astro';
+
+## Overview
+
+Publishing technical engineering walkthroughs on YouTube demands heavy post-production metadata generation: extracting accurate timecodes, generating chapter summaries, drafting code-syntax-aware descriptions, and formatting SEO tags.
+
+Rather than relying on manual copy-pasting or generic ChatGPT prompts with token truncation, I engineered an automated, local-first media asset processing pipeline.
+
+---
+
+## Architecture Blueprint
+
+<Mermaid
+  title="Media & Metadata Generation Architecture"
+  chart={`graph LR
+    Video[Raw Video File .mp4/.mkv]
+    Audio[Audio Extractor: ffmpeg]
+    Whisper[Local Whisper / FastWhisper]
+    
+    subgraph DataEngine [In-Memory Vector & Columnar Engine]
+      Polars[Polars Chunking & Timestamp Alignment]
+      DuckDB[(Embedded DuckDB Telemetry & Vector Store)]
+    end
+
+    subgraph LLMOrchestration [Local & Cloud LLMs]
+      Ollama[Ollama / Llama 3 8B Local]
+      Pydantic[Pydantic Structured Extraction]
+    end
+
+    subgraph Outputs [Generated Multi-Channel Assets]
+      YT_Meta[YouTube Chapters & SEO Metadata]
+      Blog_MD[Markdown Companion Notes]
+      LinkedIn_Post[LinkedIn Technical Summary]
+    end
+
+    Video --> Audio
+    Audio --> Whisper
+    Whisper --> Polars
+    Polars --> DuckDB
+    DuckDB --> Ollama
+    Ollama --> Pydantic
+    Pydantic --> YT_Meta
+    Pydantic --> Blog_MD
+    Pydantic --> LinkedIn_Post
+  `}
+/>
+
+---
+
+## Why Polars + DuckDB Over Pandas?
+
+Traditional Python pipelines rely on Pandas for tabular data manipulation. In this media pipeline:
+1. **Zero-Copy Memory Footprint:** Transcripts with word-level timestamps generate tens of thousands of event rows. **Polars** leverages Arrow columnar memory with multithreaded SIMD operations, parsing timestamps 8x faster than Pandas.
+2. **DuckDB In-Memory OLAP:** Embedded DuckDB allows fast analytical SQL queries over transcript chunks (e.g., finding the longest pauses, topic transition boundaries, and query-by-keyword) directly in memory with zero database daemon overhead.
+
+```python
+import polars as pl
+import duckdb
+
+def analyze_transcript_pacing(words_df: pl.DataFrame) -> pl.DataFrame:
+    """Calculates words per minute and identifies topic transition pauses."""
+    return words_df.with_columns([
+        (pl.col("start_time").diff()).alias("pause_duration"),
+        (pl.col("word_count") / (pl.col("duration") / 60.0)).alias("wpm")
+    ]).filter(pl.col("pause_duration") > 2.5)
+```
+
+---
+
+## Structured Output Enforcement via Pydantic
+
+To prevent LLM hallucination in chapter timecodes, outputs are strictly bounded using Pydantic schemas:
+
+```python
+from pydantic import BaseModel, Field
+from typing import List
+
+class ChapterMarker(BaseModel):
+    timestamp: str = Field(pattern=r"^\d{2}:\d{2}(:\d{2})?$", description="MM:SS or HH:MM:SS format")
+    title: str = Field(min_length=5, max_length=60)
+    summary: str
+
+class VideoMetadataPackage(BaseModel):
+    video_title: str
+    seo_tags: List[str]
+    chapters: List[ChapterMarker]
+    github_references: List[str]
+```
+
+---
+
+## Key Results & Takeaways
+
+- **Time Saved per Video:** Reduced post-recording metadata and companion blog generation from 2 hours to **under 4 minutes**.
+- **Completely Local & Free:** Runs locally on Apple Silicon using Ollama and local models, maintaining 100% privacy and \$0 API spend.
+- **YouTube Companion Integration:** Generates the exact timestamps and markdown guides published on this portfolio.

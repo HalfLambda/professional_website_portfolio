@@ -1,0 +1,103 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('architecture');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: post,
+  }));
+}
+
+type Props = CollectionEntry<'architecture'>;
+
+const post = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout
+  title={`${post.data.title} | Ozair Khan`}
+  description={post.data.description}
+  article={true}
+>
+  <article class="py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      <!-- Back Link -->
+      <a
+        href="/architecture"
+        class="inline-flex items-center gap-2 text-xs font-mono font-medium text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-sky-400 mb-8 transition-colors"
+      >
+        <span>←</span>
+        <span>Back to Case Studies</span>
+      </a>
+
+      <!-- Header -->
+      <header class="mb-10 pb-8 border-b border-slate-200 dark:border-dark-border">
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <span class="text-xs font-mono font-medium px-2.5 py-1 rounded bg-slate-100 dark:bg-dark-surface text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-dark-border">
+            {post.data.domain}
+          </span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 font-mono">
+            {post.data.role}
+          </span>
+        </div>
+
+        <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
+          {post.data.title}
+        </h1>
+
+        <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+          {post.data.description}
+        </p>
+
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-slate-100/70 dark:bg-dark-surface/60 border border-slate-200 dark:border-dark-border">
+          {post.data.metrics.map((m) => (
+            <div>
+              <div class="text-xl font-bold font-mono text-slate-900 dark:text-sky-400">
+                {m.value}
+              </div>
+              <div class="text-xs text-slate-500 dark:text-slate-400">
+                {m.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <!-- Tech Stack Tags -->
+        <div class="mt-6 flex flex-wrap gap-2">
+          {post.data.tech.map((t) => (
+            <span class="text-xs font-mono px-2.5 py-1 rounded bg-slate-100 dark:bg-dark-surface text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-dark-border">
+              {t}
+            </span>
+          ))}
+        </div>
+      </header>
+
+      <!-- Markdown / MDX Body -->
+      <div class="prose prose-slate dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-pre:bg-dark-card prose-pre:border prose-pre:border-dark-border">
+        <Content />
+      </div>
+
+      <!-- Footer CTA -->
+      <div class="mt-16 pt-8 border-t border-slate-200 dark:border-dark-border flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h4 class="text-sm font-bold text-slate-900 dark:text-white">
+            Facing similar data engineering or cloud migration bottlenecks?
+          </h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Book an architecture review call to audit your pipeline bottlenecks and cloud costs.
+          </p>
+        </div>
+        <a
+          href="/mentorship"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs transition-all whitespace-nowrap"
+        >
+          <span>Schedule Architecture Session</span>
+          <span>→</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</Layout>

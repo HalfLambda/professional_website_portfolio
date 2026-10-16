@@ -1,0 +1,118 @@
+---
+title: "Building an MCP Server for Data Pipeline Triage & BigQuery Optimization"
+description: "Empowering AI coding assistants with Model Context Protocol (MCP) tools to autonomously inspect BigQuery query execution plans, parse Airflow failure logs, and suggest partitioning and clustering fixes."
+pubDate: 2025-01-15
+category: "Agentic Systems & MCP"
+tech: ["Python", "Model Context Protocol (MCP)", "Google BigQuery API", "Apache Airflow", "FastMCP", "AsyncIO"]
+status: "Active Lab"
+githubUrl: "https://github.com/ozair-khan/mcp-data-pipeline-triage"
+youtubeUrl: "https://youtube.com/@ozairkhan-tech"
+featured: true
+---
+
+import Mermaid from '../../components/Mermaid.astro';
+
+## The Opportunity: AI-Assisted Data Engineering On-Call
+
+When production data pipelines fail, on-call data engineers typically repeat a manual sequence:
+1. Navigate to the Airflow web server and search through thousands of lines of task instance logs.
+2. Locate the failed step and extract the underlying BigQuery `job_id` or SQL exception.
+3. Open Google Cloud Console, query `INFORMATION_SCHEMA.JOBS_BY_PROJECT`, and inspect slot contention, bytes billed, or schema mismatch.
+
+By implementing an open-source **Model Context Protocol (MCP)** server, any MCP-compliant AI assistant (like Claude Desktop, Antigravity, or Cursor) can be granted safe, read-only analytical tools to triage and diagnose pipeline alerts automatically.
+
+---
+
+## MCP Architecture Topology
+
+<Mermaid
+  title="Model Context Protocol (MCP) Data Pipeline Triage Architecture"
+  chart={`graph LR
+    subgraph Client [AI Agent Client]
+      Claude[Claude Desktop / Antigravity / Cursor]
+    end
+
+    subgraph Protocol [Model Context Protocol JSON-RPC]
+      Transport[Standard IO / SSE Transport]
+    end
+
+    subgraph MCPServer [MCP Data Pipeline Server]
+      Tool_Logs[Tool: get_dag_task_logs]
+      Tool_BQ[Tool: analyze_bigquery_job]
+      Tool_Schema[Tool: inspect_table_lineage]
+      Resource_Metrics[Resource: bq://active_slot_allocation]
+    end
+
+    subgraph Infrastructure [Data Infrastructure Layer]
+      AirflowAPI[Airflow REST API]
+      BigQueryAPI[Google Cloud BigQuery API]
+    end
+
+    Claude <--> Transport
+    Transport <--> MCPServer
+    MCPServer --> AirflowAPI
+    MCPServer --> BigQueryAPI
+  `}
+/>
+
+---
+
+## Exposing FastMCP Tools for BigQuery Inspection
+
+Using the Python `fastmcp` SDK, tools are defined with strict Pydantic docstrings so language models understand exactly when and how to invoke them:
+
+```python
+from mcp.server.fastmcp import FastMCP
+from google.cloud import bigquery
+from pydantic import BaseModel, Field
+
+mcp = FastMCP("Data Pipeline Triage Server")
+client = bigquery.Client()
+
+@mcp.tool()
+def analyze_bigquery_job(job_id: str) -> dict:
+    """
+    Inspects a completed or failed BigQuery job by ID.
+    Returns slot utilization, total bytes processed, and execution stage bottlenecks.
+    """
+    job = client.get_job(job_id)
+    
+    stages_summary = []
+    if hasattr(job, 'query_plan'):
+      for stage in job.query_plan:
+        stages_summary.append({
+          "name": stage.name,
+          "records_read": stage.records_read,
+          "slot_ms": stage.slot_ms,
+          "status": stage.status
+        })
+
+    return {
+      "job_id": job.job_id,
+      "state": job.state,
+      "error_result": job.error_result,
+      "total_bytes_billed_gb": (job.total_bytes_billed or 0) / (1024 ** 3),
+      "total_slot_ms": job.total_slot_ms,
+      "query_stages": stages_summary
+    }
+```
+
+---
+
+## Sample Agent Interaction: Automated Diagnostic
+
+When an on-call engineer prompts:  
+> *"Why did the transaction aggregation DAG fail at 03:00 UTC?"*
+
+The agent:
+1. Calls `get_dag_task_logs(dag_id="commercial_settlement_v2", execution_date="2025-01-14T03:00:00Z")`.
+2. Identifies error: `Error during query execution: Resources exceeded during query execution: Your query exceeded the maximum slot limit.`
+3. Calls `analyze_bigquery_job(job_id="bquxjob_7c8d9e")`.
+4. Discovers a missing `PARTITION BY` filter causing an unintentional scan of 14 TB instead of the expected 12 GB daily partition.
+5. Emits the exact 1-line SQL fix with line number references.
+
+---
+
+## Next Steps & Video Walkthrough
+
+This lab bridges my enterprise data engineering background with modern agentic workflows from **Ed Donner's Complete Agent & MCP Course**. Full setup and local Claude Desktop integration will be detailed on my YouTube channel.

@@ -1,0 +1,126 @@
+---
+import { siteConfig } from '../config/site';
+
+interface Props {
+  topmateUsername?: string;
+}
+
+const { topmateUsername = 'ozair_khan' } = Astro.props;
+const topmateProfileUrl = `https://topmate.io/${topmateUsername}`;
+---
+
+<div class="space-y-8">
+  <!-- Session Tier Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Tier 1: 1-on-1 Architecture & Career Review -->
+    <div class="rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-card p-6 flex flex-col justify-between hover:border-sky-500/50 transition-all">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60">
+            30 Mins • 1:1 Call
+          </span>
+          <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400">
+            Instant Scheduling
+          </span>
+        </div>
+
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">
+          Data Engineering Career & Architecture Review
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+          Deep-dive your pipeline architecture, cloud migration strategy (BigQuery, Spark, Airflow), or map out your career roadmap to transition into Senior / AI Data Engineering.
+        </p>
+
+        <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-300 font-mono mb-6">
+          <li class="flex items-center gap-2">
+            <span class="text-sky-400">✓</span> Cloud Data Warehouse Architecture & Cost Optimization
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-sky-400">✓</span> Moving from Traditional DE to Applied AI / LLM Pipelines
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-sky-400">✓</span> Actionable feedback & session follow-up notes
+          </li>
+        </ul>
+      </div>
+
+      <a
+        href={topmateProfileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs sm:text-sm transition-all shadow-sm"
+      >
+        <span>Schedule on Topmate</span>
+        <span>↗</span>
+      </a>
+    </div>
+
+    <!-- Tier 2: Mock Interview & Resume Audit -->
+    <div class="rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-card p-6 flex flex-col justify-between hover:border-sky-500/50 transition-all">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
+            45 Mins • Intensive
+          </span>
+          <span class="text-xs font-mono text-purple-600 dark:text-purple-400">
+            High Conversion
+          </span>
+        </div>
+
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">
+          Mock Technical Interview & Portfolio Audit
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+          Real enterprise-grade system design scenario or technical resume review. Learn what hiring managers actually look for in Senior Data Engineer candidates.
+        </p>
+
+        <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-300 font-mono mb-6">
+          <li class="flex items-center gap-2">
+            <span class="text-purple-400">✓</span> Rigorous SQL, Distributed Data & ETL System Design
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-purple-400">✓</span> Line-by-line Resume & GitHub Project Positioning
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-purple-400">✓</span> Tailored improvement roadmap for high-paying roles
+          </li>
+        </ul>
+      </div>
+
+      <a
+        href={topmateProfileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-purple-500/40 hover:bg-purple-500/10 text-purple-600 dark:text-purple-300 font-semibold text-xs sm:text-sm transition-all"
+      >
+        <span>Book Interview Session on Topmate</span>
+        <span>↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Topmate Embed / Badge Support -->
+  <div class="rounded-xl border border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-surface/40 p-6 text-center">
+    <div class="max-w-xl mx-auto space-y-3">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60">
+        <span class="h-1.5 w-1.5 rounded-full bg-sky-400 animate-ping"></span>
+        Direct Calendar Synchronization
+      </div>
+      <h4 class="text-base font-bold text-slate-900 dark:text-white">
+        Need a customized advisory engagement or enterprise consultation?
+      </h4>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+        If you are an enterprise team seeking guidance on cloud data migration, BigQuery cost governance, or custom AI agent data ingestion, feel free to reach out directly via email.
+      </p>
+      <div class="pt-2">
+        <a
+          href={`mailto:${siteConfig.email}?subject=Enterprise%20Advisory%20Inquiry`}
+          class="inline-flex items-center gap-2 text-xs font-mono font-medium text-sky-600 dark:text-sky-400 hover:underline"
+        >
+          <span>Email {siteConfig.email}</span>
+          <span>→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

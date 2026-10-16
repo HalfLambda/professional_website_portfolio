@@ -1,0 +1,79 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  slug: string;
+  role: string;
+  domain: string;
+  tech: string[];
+  metrics: Array<{ label: string; value: string }>;
+}
+
+const { title, description, slug, role, domain, tech, metrics } = Astro.props;
+---
+
+<div class="group relative rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-card p-6 sm:p-8 hover:border-sky-500/50 dark:hover:border-sky-500/50 transition-all duration-300 hover:shadow-lg dark:hover:shadow-sky-500/5 flex flex-col justify-between">
+  <!-- Top Meta Bar -->
+  <div>
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-mono font-medium px-2.5 py-1 rounded bg-slate-100 dark:bg-dark-surface text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-dark-border">
+          {domain}
+        </span>
+        <span class="text-xs text-slate-500 dark:text-slate-400 font-mono">
+          {role}
+        </span>
+      </div>
+      <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+        Enterprise Verified
+      </span>
+    </div>
+
+    <!-- Title & Description -->
+    <h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-sky-500 dark:group-hover:text-sky-400 transition-colors mb-3">
+      <a href={`/architecture/${slug}`} class="focus:outline-none">
+        <span class="absolute inset-0" aria-hidden="true"></span>
+        {title}
+      </a>
+    </h3>
+    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+      {description}
+    </p>
+
+    <!-- Key Impact Metrics Grid -->
+    <div class="grid grid-cols-2 gap-3 mb-6 p-4 rounded-lg bg-slate-50 dark:bg-dark-surface/60 border border-slate-200/60 dark:border-dark-border/60">
+      {metrics.map((metric) => (
+        <div>
+          <div class="text-lg font-bold font-mono text-slate-900 dark:text-sky-300">
+            {metric.value}
+          </div>
+          <div class="text-xs text-slate-500 dark:text-slate-400">
+            {metric.label}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Footer: Tech Tags & Read Case Study Link -->
+  <div class="pt-4 border-t border-slate-100 dark:border-dark-border/60 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex flex-wrap gap-1.5">
+      {tech.slice(0, 4).map((item) => (
+        <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-dark-surface text-slate-600 dark:text-slate-400">
+          {item}
+        </span>
+      ))}
+      {tech.length > 4 && (
+        <span class="text-[11px] font-mono px-1.5 py-0.5 rounded text-slate-400">
+          +{tech.length - 4}
+        </span>
+      )}
+    </div>
+
+    <div class="flex items-center gap-1 text-xs font-semibold font-mono text-sky-600 dark:text-sky-400 group-hover:translate-x-0.5 transition-transform">
+      <span>Read Breakdown</span>
+      <span>→</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,202 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { siteConfig } from '../config/site';
+import ArchitectureCard from '../components/ArchitectureCard.astro';
+import LabCard from '../components/LabCard.astro';
+import { getCollection } from 'astro:content';
+
+const allArchitecture = await getCollection('architecture');
+const featuredArchitecture = allArchitecture.filter((item) => item.data.featured);
+
+const allLabs = await getCollection('labs');
+const featuredLabs = allLabs.filter((item) => item.data.featured);
+---
+
+<Layout>
+  <!-- HERO SECTION -->
+  <section class="relative pt-12 pb-16 sm:pt-20 sm:pb-24 border-b border-slate-200/80 dark:border-dark-border/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="max-w-3xl space-y-6">
+        <!-- Top Status Pill -->
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 text-sky-700 dark:text-sky-300">
+          <span class="h-2 w-2 rounded-full bg-sky-500 animate-pulse"></span>
+          <span>Senior Data Engineer &bull; UIUC MCS Candidate</span>
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15]">
+          Architecting <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-cyan-400 to-emerald-400">Enterprise Data Platforms</span> & Applied AI Workflows.
+        </h1>
+
+        <!-- Subheading -->
+        <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+          Bridging production-scale distributed data engineering (<span class="text-slate-900 dark:text-white font-medium">BigQuery, Spark, Airflow</span>) with modern Information Retrieval, RAG, and Agentic AI workflows.
+        </p>
+
+        <!-- Action CTAs -->
+        <div class="pt-2 flex flex-wrap items-center gap-4">
+          <a
+            href="/architecture"
+            class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-sm transition-all shadow-sm hover:shadow-sky-500/20"
+          >
+            <span>Read Architecture Case Studies</span>
+            <span class="text-base">→</span>
+          </a>
+          <a
+            href="/mentorship"
+            class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-slate-300 dark:border-dark-border hover:bg-slate-100 dark:hover:bg-dark-surface text-slate-800 dark:text-slate-200 font-semibold text-sm transition-all"
+          >
+            <span>Book 1:1 Data Mentorship</span>
+            <span class="text-xs font-mono text-emerald-500">● Open</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPACT METRICS BAR (Immediate Authority for Visitors & Visa Reviewers) -->
+  <section class="border-b border-slate-200/80 dark:border-dark-border/80 bg-slate-100/50 dark:bg-dark-surface/30 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {siteConfig.impactMetrics.map((metric) => (
+          <div class="rounded-lg p-4 border border-slate-200 dark:border-dark-border/60 bg-white dark:bg-dark-card/60">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-mono font-medium text-slate-500 dark:text-slate-400">
+                {metric.title}
+              </span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60">
+                {metric.tag}
+              </span>
+            </div>
+            <div class="text-lg font-bold font-mono text-slate-900 dark:text-white mb-1">
+              {metric.highlight}
+            </div>
+            <div class="text-xs text-slate-600 dark:text-slate-400 leading-normal">
+              {metric.description}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 1: PRODUCTION ARCHITECTURE (Enterprise Track Record) -->
+  <section class="py-16 sm:py-20 border-b border-slate-200/80 dark:border-dark-border/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+        <div>
+          <div class="text-xs font-mono uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-1">
+            Section 01 // Production Track Record
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Enterprise Architecture Case Studies
+          </h2>
+          <p class="text-sm text-slate-600 dark:text-slate-400 max-w-xl mt-1">
+            Deep-dive architectural RFCs detailing zero-downtime cloud migrations, multi-stream data pipelines, and verified operational benchmarks.
+          </p>
+        </div>
+        <a
+          href="/architecture"
+          class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+        >
+          <span>View All Case Studies</span>
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {featuredArchitecture.map((item) => (
+          <ArchitectureCard
+            title={item.data.title}
+            description={item.data.summary}
+            slug={item.slug}
+            role={item.data.role}
+            domain={item.data.domain}
+            tech={item.data.tech}
+            metrics={item.data.metrics}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: APPLIED AI & OPEN-SOURCE LABS (The "AI Data Engineer" Bridge) -->
+  <section class="py-16 sm:py-20 border-b border-slate-200/80 dark:border-dark-border/80 bg-slate-50/50 dark:bg-dark-surface/20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+        <div>
+          <div class="text-xs font-mono uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-1">
+            Section 02 // Engineering Labs & Research
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Applied AI & Open-Source Tooling
+          </h2>
+          <p class="text-sm text-slate-600 dark:text-slate-400 max-w-xl mt-1">
+            Combining distributed data engineering discipline with UIUC CS 410/441 research, Model Context Protocol (MCP), and local LLM automations.
+          </p>
+        </div>
+        <a
+          href="/labs"
+          class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-purple-600 dark:text-purple-400 hover:underline"
+        >
+          <span>Explore All Labs</span>
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {featuredLabs.map((item) => (
+          <LabCard
+            title={item.data.title}
+            description={item.data.description}
+            slug={item.slug}
+            category={item.data.category}
+            status={item.data.status}
+            tech={item.data.tech}
+            githubUrl={item.data.githubUrl}
+            youtubeUrl={item.data.youtubeUrl}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: MENTORSHIP & ADVISORY FUNNEL -->
+  <section class="py-16 sm:py-20 border-b border-slate-200/80 dark:border-dark-border/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="rounded-2xl border border-slate-200 dark:border-dark-border bg-gradient-to-b from-white to-slate-50 dark:from-dark-card dark:to-dark-bg p-8 sm:p-12 relative overflow-hidden">
+        <div class="max-w-2xl space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>1-on-1 Mentorship & Advisory</span>
+          </div>
+
+          <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Transitioning into Data Engineering or scaling into AI Data Platforms?
+          </h2>
+
+          <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+            I offer focused 1-on-1 advisory sessions for junior and mid-level engineers: architectural system design audits, cloud warehouse roadmaps (BigQuery/Spark), and mock technical interview preparation.
+          </p>
+
+          <div class="pt-4 flex flex-wrap items-center gap-4">
+            <a
+              href="/mentorship"
+              class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-sm transition-all shadow-sm"
+            >
+              <span>Schedule a 1:1 Session on Topmate</span>
+              <span>↗</span>
+            </a>
+            <a
+              href="/dossier"
+              class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-slate-300 dark:border-dark-border hover:bg-slate-100 dark:hover:bg-dark-surface text-slate-800 dark:text-slate-200 font-semibold text-sm transition-all"
+            >
+              <span>View Verified Dossier & CV</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

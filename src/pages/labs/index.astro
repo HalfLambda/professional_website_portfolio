@@ -1,0 +1,76 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LabCard from '../../components/LabCard.astro';
+import { getCollection } from 'astro:content';
+
+const allLabs = await getCollection('labs');
+const sortedLabs = allLabs.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const categories = [
+  'All Labs',
+  'Agentic Systems & MCP',
+  'Information Retrieval & RAG',
+  'Media & Data Automation',
+];
+---
+
+<Layout
+  title="Applied AI & Data Labs | Ozair Khan"
+  description="Engineering labs, open-source repositories, and applied experiments bridging distributed data platforms with Model Context Protocol (MCP) and local LLMs."
+>
+  <div class="py-12 sm:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <!-- Header -->
+      <div class="max-w-3xl mb-12">
+        <div class="text-xs font-mono uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-2">
+          Engineering Labs // Pillar B
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
+          Applied AI & Open-Source Labs
+        </h1>
+        <p class="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+          Applied proof-of-concepts and open-source tooling. Combining production data engineering discipline with academic Information Retrieval (UIUC CS 410 / CS 441) and Agentic AI workflows (Model Context Protocol).
+        </p>
+      </div>
+
+      <!-- Labs Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {sortedLabs.map((item) => (
+          <LabCard
+            title={item.data.title}
+            description={item.data.description}
+            slug={item.slug}
+            category={item.data.category}
+            status={item.data.status}
+            tech={item.data.tech}
+            githubUrl={item.data.githubUrl}
+            youtubeUrl={item.data.youtubeUrl}
+          />
+        ))}
+      </div>
+
+      <!-- YouTube & Open Source Callout -->
+      <div class="mt-16 rounded-xl border border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-surface/40 p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="space-y-1">
+          <h3 class="text-sm font-bold font-mono text-slate-900 dark:text-white">
+            Upcoming YouTube Breakdowns & Repos
+          </h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            Each lab is accompanied by a modular GitHub repository and a deep-dive YouTube video walkthrough explaining the code and architectural trade-offs.
+          </p>
+        </div>
+        <a
+          href="https://youtube.com/@ozairkhan-tech"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold text-xs whitespace-nowrap transition-all shadow-sm"
+        >
+          <span>Subscribe on YouTube</span>
+          <span>↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>

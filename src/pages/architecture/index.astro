@@ -1,0 +1,57 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArchitectureCard from '../../components/ArchitectureCard.astro';
+import { getCollection } from 'astro:content';
+
+const allArchitecture = await getCollection('architecture');
+const sortedArchitecture = allArchitecture.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<Layout
+  title="Production Architecture Case Studies | Ozair Khan"
+  description="Deep-dive architectural breakdowns of large-scale enterprise data migrations, multi-stream data pipelines, and distributed compute platforms."
+>
+  <div class="py-12 sm:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <!-- Page Header -->
+      <div class="max-w-3xl mb-12">
+        <div class="text-xs font-mono uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-2">
+          Evidence Hub // Pillar A
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
+          Enterprise Architecture Case Studies
+        </h1>
+        <p class="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+          Detailed engineering RFCs outlining enterprise cloud migrations, distributed data pipelines, and scalable warehouse topologies. All proprietary data has been sanitized while preserving architectural depth, trade-offs, and verified impact metrics.
+        </p>
+      </div>
+
+      <!-- Case Studies List -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {sortedArchitecture.map((item) => (
+          <ArchitectureCard
+            title={item.data.title}
+            description={item.data.summary}
+            slug={item.slug}
+            role={item.data.role}
+            domain={item.data.domain}
+            tech={item.data.tech}
+            metrics={item.data.metrics}
+          />
+        ))}
+      </div>
+
+      <!-- Methodology Note -->
+      <div class="mt-16 p-6 rounded-xl border border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-surface/40">
+        <h3 class="text-sm font-bold font-mono text-slate-900 dark:text-white mb-2">
+          Architectural RFC Format & Visa Standards
+        </h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          Each case study adheres to the RFC (Request for Comments) standard: Executive Summary → System Topology (Mermaid.js) → Hard Trade-offs & Bottlenecks → Measurable Business Impact. Curated to satisfy evidentiary standards for the <strong>US O-1A (Extraordinary Ability)</strong> and <strong>UK Global Talent Visa (Tech Nation)</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>

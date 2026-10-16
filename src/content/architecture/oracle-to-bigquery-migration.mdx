@@ -1,0 +1,140 @@
+---
+title: "Enterprise Oracle to BigQuery Migration: Architecture & Cutover"
+description: "Architecting zero-downtime cutover and distributed ELT pipelines migrating multi-terabyte financial and inventory data from on-premise Oracle to Google Cloud BigQuery."
+pubDate: 2024-03-15
+role: "Lead Cloud Data Architect"
+domain: "Enterprise Data Warehousing"
+tech: ["Google BigQuery", "Apache Airflow", "Oracle", "Python", "Cloud Storage", "dbt", "IAM Governance"]
+metrics:
+  - label: "Query Latency Reduction"
+    value: "-64%"
+  - label: "Annual Cloud Compute Savings"
+    value: "$180K"
+  - label: "Daily Data Ingested"
+    value: "2.4 TB"
+  - label: "Data Freshness SLA"
+    value: "15 Mins"
+summary: "Re-architected monolithic Oracle nightly batches into partitioned BigQuery ELT with Airflow DAGs, reducing critical reporting latency from 8 hours to 15 minutes."
+featured: true
+---
+
+import Mermaid from '../../components/Mermaid.astro';
+
+## 1. Executive Summary & Problem Context
+
+The enterprise operated on a legacy on-premise Oracle Exadata data warehouse that supported global commercial transactions, supply chain inventory, and financial reporting. 
+
+Over a 5-year period of rapid transaction growth, the legacy system suffered from critical operational bottlenecks:
+- **Nightly Batch Exhaustion:** Heavy ETL transformations ran 6 to 8 hours overnight, consistently breaching business-critical SLAs before market opening.
+- **Resource Contention:** Concurrent analytical queries from BI teams choked active ingestion batches, leading to lock contention and high operational maintenance overhead.
+- **Licensing & Scaling Wall:** Scaling vertical capacity on-premise required prohibitive hardware procurement cycles and exponential licensing fees.
+
+**The Objective:** Lead the end-to-end architectural design, data modeling, and zero-data-loss cutover to **Google BigQuery**, establishing a decoupled compute-and-storage modern data platform.
+
+---
+
+## 2. Target System Topology
+
+The target architecture adopted an **ELT (Extract-Load-Transform)** pattern powered by Cloud Storage, Google BigQuery, and managed Apache Airflow:
+
+<Mermaid 
+  title="Enterprise Oracle to BigQuery Data Architecture"
+  chart={`graph LR
+    subgraph OnPrem [On-Premise Core]
+      Oracle[(Oracle Exadata)]
+      CDC[Debezium / Oracle GoldenGate]
+    end
+
+    subgraph Ingestion [GCP Ingestion Layer]
+      GCS[(Cloud Storage Staging)]
+      PubSub[Cloud Pub/Sub]
+    end
+
+    subgraph DataPlatform [BigQuery Modern Data Platform]
+      BQ_Raw[(Raw Layer / External)]
+      BQ_Stage[(Silver / Normalized)]
+      BQ_Marts[(Gold / Star Schema Marts)]
+    end
+
+    subgraph Orchestration [Governance & Orchestration]
+      Airflow[Cloud Composer / Airflow]
+      dbt[dbt Core Models]
+    end
+
+    subgraph Consumers [Downstream Intelligence]
+      Looker[Looker & Tableau]
+      ML[Applied ML & Forecasting]
+    end
+
+    Oracle --> CDC
+    CDC --> GCS
+    GCS --> BQ_Raw
+    Airflow --> BQ_Raw
+    BQ_Raw --> dbt
+    dbt --> BQ_Stage
+    BQ_Stage --> BQ_Marts
+    BQ_Marts --> Looker
+    BQ_Marts --> ML
+  `} 
+/>
+
+---
+
+## 3. Engineering Decisions & Architecture Trade-Offs
+
+### A. Partitioning & Clustering Strategy
+
+BigQuery costs and execution speed depend strictly on bytes scanned. For high-volume transaction tables:
+- **Partitioning:** Ingestion timestamp partitioning (`_PARTITIONDATE`) was applied on append-only streams, preventing full-table scans.
+- **Clustering:** Multi-column clustering on `(merchant_id, store_id, transaction_status)` was implemented. This matched the high-cardinality filters of 90% of downstream commercial queries.
+
+```sql
+-- Production DDL pattern for high-scale transaction log
+CREATE OR REPLACE TABLE \`production_dw.fct_commercial_transactions\`
+(
+  transaction_id STRING NOT NULL,
+  merchant_id STRING NOT NULL,
+  store_id STRING NOT NULL,
+  transaction_timestamp TIMESTAMP NOT NULL,
+  gross_amount NUMERIC(12, 2),
+  fee_amount NUMERIC(12, 2),
+  transaction_status STRING
+)
+PARTITION BY DATE(transaction_timestamp)
+CLUSTER BY merchant_id, store_id, transaction_status
+OPTIONS (
+  require_partition_filter = true,
+  description = "Partitioned commercial transactions log with mandatory filter"
+);
+```
+
+### B. Slot Reservation vs. On-Demand Pricing
+
+To eliminate surprise queries running up runaway cloud bills:
+1. Production ELT DAGs were pinned to a dedicated **Flat-Rate / Capacity-based Slot Reservation** (500 slots) with burst capacity.
+2. Ad-hoc BI exploration remained isolated in a distinct project with per-user byte scan limits enforced via BigQuery custom query limits.
+
+### C. Zero-Data-Loss Dual-Run Validation
+
+Prior to the cutover window:
+- Implemented an automated reconciliation pipeline using **PySpark** running checksum and row-count drift calculations between Oracle extracts and BigQuery tables across 90 rolling days.
+- Zero discrepancy was certified across **2.4 TB/day** before decomissioning legacy database links.
+
+---
+
+## 4. Measurable Business & Technical Impact
+
+| Metric Dimension | Legacy Oracle | Google BigQuery | Impact Delta |
+| :--- | :--- | :--- | :--- |
+| **P95 BI Dashboard Query Latency** | 42.6 seconds | 15.3 seconds | **-64.1%** |
+| **End-to-End Ingestion SLA** | 7h 45m | 18 minutes | **96% Faster** |
+| **Annual Compute/License Cost** | Enterprise On-Prem License | Optimized GCP Slot Reservations | **$180,000 Saved** |
+| **Pipeline Reliability** | 94.2% (daily manual re-runs) | 99.92% (automated retries) | **Zero SLA Breaches** |
+
+---
+
+## 5. Visa Evidence Mapping (O-1A / UK GTV)
+
+- **O-1A Criterion:** *Critical or Essential Capacity for Organizations with Distinguished Reputation* & *Original Scientific/Technical Contributions*.
+- **UK GTV Criterion:** *Optional Criteria 3: Significant Technical & Commercial Impact*.
+- **Artifacts:** Verified sanitized DDLs, reconciliation notebooks, and architecture RFCs are available in private dossier appendices.

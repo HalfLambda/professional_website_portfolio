@@ -1,0 +1,122 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { siteConfig } from '../config/site';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  article?: boolean;
+}
+
+const {
+  title = siteConfig.title,
+  description = siteConfig.description,
+  image = '/og-image.png',
+  article = false,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://ozairkhan.dev');
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta name="author" content={siteConfig.author} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, canonicalURL)} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, canonicalURL)} />
+
+    <!-- Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Theme initialization script (prevents flash of white in dark mode) -->
+    <script is:inline>
+      (function () {
+        const theme =
+          localStorage.getItem('color-theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+
+    <!-- Structured Data (JSON-LD) for Person & Visa Verification -->
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: siteConfig.name,
+        jobTitle: siteConfig.role,
+        url: siteConfig.url,
+        alumniOf: [
+          {
+            '@type': 'EducationalOrganization',
+            name: 'University of Illinois Urbana-Champaign',
+            description: 'Master of Computer Science (MCS)',
+          },
+        ],
+        knowsAbout: [
+          'Enterprise Data Engineering',
+          'Google Cloud Platform',
+          'BigQuery',
+          'Distributed Systems',
+          'Information Retrieval',
+          'Agentic AI & Model Context Protocol (MCP)',
+          'PySpark',
+          'DuckDB',
+        ],
+        sameAs: [
+          siteConfig.socials.github,
+          siteConfig.socials.linkedin,
+          siteConfig.socials.youtube,
+        ],
+      })}
+    />
+  </head>
+  <body class="min-h-screen flex flex-col bg-slate-50 dark:bg-dark-bg text-slate-800 dark:text-slate-100 selection:bg-sky-500/20 selection:text-sky-400">
+    <div class="fixed inset-0 pointer-events-none bg-grid-pattern opacity-60 z-0"></div>
+    <div class="relative z-10 flex flex-col min-h-screen">
+      <Navbar />
+      <main class="flex-grow">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

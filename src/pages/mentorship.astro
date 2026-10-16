@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TopmateEmbed from '../components/TopmateEmbed.astro';
+---
+
+<Layout
+  title="1-on-1 Mentorship & Advisory | Ozair Khan"
+  description="Personalized 1-on-1 advisory for junior and mid-level engineers: distributed data architecture audits, cloud warehouse roadmaps (BigQuery, Spark, Airflow), and technical interview coaching."
+>
+  <div class="py-12 sm:py-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <!-- Header -->
+      <div class="max-w-3xl mb-12">
+        <div class="text-xs font-mono uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-2">
+          Guidance & Consulting // Pillar C
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
+          1-on-1 Data Engineering Advisory & Mentorship
+        </h1>
+        <p class="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+          I partner with junior and mid-level engineers, career switchers, and engineering teams to provide pragmatic, enterprise-tested guidance on data system design, cloud migrations, and advancing into Senior & AI Data Engineering.
+        </p>
+      </div>
+
+      <!-- Session Offerings via Topmate Component -->
+      <div class="mb-16">
+        <TopmateEmbed topmateUsername="ozair_khan" />
+      </div>
+
+      <!-- Who Is This For? -->
+      <div class="mb-16">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6">
+          Who Gets the Highest Leverage From These Sessions?
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-card">
+            <div class="text-xs font-mono font-semibold text-sky-500 mb-2">01 // Junior Data Engineers</div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">
+              Breaking Past Beginner Tutorials
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Move beyond basic SQL queries into understanding distributed compute partitions, idempotent backfills, schema drift, and production CI/CD.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-card">
+            <div class="text-xs font-mono font-semibold text-purple-500 mb-2">02 // Mid-Level DEs</div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">
+              Transitioning into AI / Platform Roles
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Learn how to bridge traditional ETL with vector databases, hybrid search (BM25 + Dense RRF), Model Context Protocol (MCP), and local LLM pipelines.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-card">
+            <div class="text-xs font-mono font-semibold text-emerald-500 mb-2">03 // Software Engineers</div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">
+              System Design & Interview Prep
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Get battle-tested feedback on real system design questions asked by tier-1 tech firms and enterprise hiring panels.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Section -->
+      <div class="border-t border-slate-200 dark:border-dark-border pt-12">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6">
+          Frequently Asked Questions
+        </h2>
+        <div class="space-y-4">
+          <div class="p-5 rounded-xl border border-slate-200 dark:border-dark-border bg-slate-50/50 dark:bg-dark-surface/30">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">
+              How should I prepare for our 1:1 session?
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Once you book via Topmate, you will receive a short intake prompt. Submit your GitHub profile, resume, or a 1-page architecture diagram of the system you want to discuss at least 24 hours in advance so I can review it before our call.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-xl border border-slate-200 dark:border-dark-border bg-slate-50/50 dark:bg-dark-surface/30">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">
+              Do you offer ongoing mentorship or group training?
+            </h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              For teams requiring custom workshops or multi-week roadmaps on BigQuery optimization and modern data stack migrations, reach out directly via email to discuss custom arrangements.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Future Products Teaser -->
+      <div class="mt-12 p-6 rounded-xl border border-dashed border-slate-300 dark:border-dark-border text-center">
+        <span class="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          Coming Soon
+        </span>
+        <h3 class="text-base font-bold text-slate-900 dark:text-white mt-1 mb-1">
+          Digital Blueprints & Interview Starter Kits
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+          Currently packaging repeatable enterprise data pipeline templates, BigQuery cost-audit notebooks, and technical interview rubrics.
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>
