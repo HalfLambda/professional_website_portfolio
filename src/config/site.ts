@@ -40,7 +40,7 @@ export const siteConfig: SiteConfig = {
   author: "Ozair Khan",
   email: "contact@ozairkhan.dev",
   socials: {
-    github: "https://github.com/ozair-khan",
+    github: "https://github.com/HalfLambda",
     linkedin: "https://linkedin.com/in/ozairkhan",
     youtube: "https://youtube.com/@ozairkhan-tech",
   },

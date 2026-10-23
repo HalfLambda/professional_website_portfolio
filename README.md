@@ -73,7 +73,7 @@ This repository powers the personal website, technical engineering showcase, and
 
 1. **Clone and install dependencies:**
    ```bash
-   git clone https://github.com/ozair-khan/professional_website_portfolio.git
+   git clone git@github.com:HalfLambda/professional_website_portfolio.git
    cd professional_website_portfolio
    npm install
    ```
